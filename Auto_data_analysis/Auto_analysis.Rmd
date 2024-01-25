@@ -1,0 +1,157 @@
+---
+title: "ST462_ST662"
+subtitle: "Assignment 1"
+output:
+  html_document: default
+  pdf_document:
+    number_sections: yes
+
+```{r load_packages1, message = FALSE}
+if (!require(gridExtra)) install.packages('gridExtra', dependencies = TRUE) 
+library(gridExtra)
+if (!require(knitr)) install.packages('knitr', dependencies = TRUE) 
+library(knitr)
+if (!require(GGally)) install.packages('GGally', dependencies = TRUE)
+library(GGally)
+if (!require(kableExtra)) install.packages('kableExtra', dependencies = TRUE) 
+library(kableExtra)
+if (!require(jtools)) install.packages('jtools', dependencies = TRUE) 
+library(jtools)
+if (!require(rsample)) install.packages('rsample', dependencies = TRUE)
+library(rsample)
+if (!require(broom)) install.packages('broom', dependencies = TRUE) 
+library(broom)
+if (!require(tidyverse)) install.packages('tidyverse', dependencies = TRUE)
+library(tidyverse)
+```
+```{r include=FALSE}
+if(knitr::is_html_output()){options(knitr.table.format = "html")} else {options(knitr.table.format = "latex")}
+```
+Adding the file for Q1
+Installing package
+```{r}
+install.packages("ISLR2")
+library(ISLR2)
+
+```
+Loading the Data 
+```{r}
+data(Auto)
+```
+
+Scatter Matrix plot
+```{r}
+pairs(Auto)
+```
+
+Installing packages for data analysis
+```{r, include=FALSE, echo=FALSE}
+rm(list=ls()) #clear environment
+
+library(ISLR)
+library(DAAG)
+library(PerformanceAnalytics)
+install.packages("ggplot2")
+install.packages("GGally")
+install.packages("psych")
+
+#read dataset
+auto <- Auto
+```
+
+Question A
+Scatter plot matrix includes all variables in the "Auto" data set
+```{r}
+pairs(auto)
+```
+
+
+```{r}
+library(ggplot2) 
+library(GGally)
+Scatter_Matrix <- ggpairs(auto,columns = c(1,6:8), 
+                          title = "Scatter Plot Matrix for Auto Dataset", 
+                          axisLabels = "show") 
+ggsave("Scatter plot matrix.png", Scatter_Matrix, width = 7, 
+       height = 7, units = "in") 
+Scatter_Matrix
+
+
+```
+
+
+```{r, include=TRUE, echo=TRUE}
+#exploratory analysis
+chart.Correlation(Auto[, -9])
+```
+
+
+Question D
+USe the LM function for 
+Regression model orignial
+```{r}
+model <- lm(mpg ~ . - name, data = Auto)
+# Print the summary of the regression model
+summary(model)
+plot(model)
+```
+
+Question D
+Using the plot function for linear fit
+
+```{r}
+par(mfrow = c(2,2))
+plot(model)
+```
+
+Quesiton E
+Adding different transformations (* and :) to models
+```{r}
+#Squaring
+
+model_square_accel = lm(mpg ~ horsepower + weight + cylinders + origin + acceleration*acceleration, data = auto)
+summary(model_square_accel)
+
+
+#interaction terms
+#Horse and weight interaction
+model_horseweight <- lm(mpg ~ horsepower + weight + horsepower:weight, data = auto)
+
+summary(model_horseweight)
+plot(model_horseweight)
+
+#adding interaction between weight and accel, horse and accel, year and origin
+
+model_triple = lm(mpg ~.-name-cylinders-acceleration+year:origin+displacement:weight+
+                  displacement:weight+acceleration:horsepower+acceleration:weight, data=auto)
+summary(model_triple)
+plot(model_triple)
+
+
+```
+
+
+Question F
+Changing the models to log-log, sqrt, ^2 and other interaction terms included
+
+```{r}
+# Fit a linear regression model with original variables
+model_original <- lm(mpg ~ horsepower + weight + cylinders, data = auto)
+summary(model_original)
+
+# Fit a linear regression model with log-transformed variables
+model_log <- lm(mpg ~ log(horsepower) + log(weight) + log(cylinders), data = auto)
+summary(model_log)
+
+
+# Fit a linear regression model with square root-transformed variables
+model_sqrt <- lm(mpg ~ sqrt(horsepower) + sqrt(weight) + sqrt(cylinders), data = auto)
+summary(model_sqrt)
+
+# Fit a linear regression model with squared variables
+model_squared <- lm(mpg ~ I(horsepower^2) + I(weight^2) + I(cylinders^2), data = auto)
+summary(model_squared)
+
+```
+
+
